@@ -5,11 +5,11 @@ OBJ: parallel serial strassen_serial strassen_parallel random
 	$(CC) -o $@ $< -fopenmp
 
 run: $(OBJ)
-	@./random 2048 input.txt
+	@./random 1024 input.txt
 	@./serial
 	@./parallel
-	@./strassen_serial
-	@./strassen_parallel
+	#@./strassen_serial
+	#@./strassen_parallel
 	@echo "difference between serial.txt and parallel.txt :"
 	@diff serial.txt parallel.txt
 
