@@ -5,13 +5,17 @@ OBJ: parallel serial strassen_serial strassen_parallel random
 	$(CC) -o $@ $< -fopenmp
 
 run: $(OBJ)
+	@./random 2048 input.txt
 	@./serial
 	@./parallel
 	@./strassen_serial
 	@./strassen_parallel
+	@echo "difference between serial.txt and parallel.txt :"
+	@diff serial.txt parallel.txt
 
 cache-clean:
 	echo 1 | sudo tee /proc/sys/vm/drop_caches
 
-clean: 
-	-rm -f parallel serial strassen_serial strassen_parallel random 
+.PHONY: clean
+clean:
+	-rm -f parallel serial strassen_serial strassen_parallel random *.txt

@@ -13,6 +13,10 @@ Multiplication以便與之比較)
     ```
     make run
     ```
+* 清除執行檔及 txt 檔
+    ```
+    make clean
+    ```
 * 清除 cache
     ```
     make cache-clean
