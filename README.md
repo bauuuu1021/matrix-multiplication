@@ -1,8 +1,8 @@
 # 程式語言 HW4
 ## 目標
-- [ ] 實作平行架構之傳統Matrix Multiplication與Strassen‘s
+* 實作平行架構之傳統Matrix Multiplication與Strassen‘s
 Matrix Multiplication 
-- [ ] 改良或設計其他加速方法(亦須實作Strassen‘s Matrix
+* 改良或設計其他加速方法(亦須實作Strassen‘s Matrix
 Multiplication以便與之比較)
 ## 執行方式
 * 編譯
@@ -13,6 +13,9 @@ Multiplication以便與之比較)
     ```
     make run
     ```
+    * 列出四個執行檔在「乘法運算」所花的時間
+    * 四個執行檔的運算結果會分別存入名稱相同的 txt 檔
+    * 若比對結果不同會輸出相異處，若相同則不會有輸出
 * 清除執行檔及 txt 檔
     ```
     make clean
@@ -22,12 +25,12 @@ Multiplication以便與之比較)
     make cache-clean
     ```
 * 亂數矩陣 
-    * SIZE 及 FILE_NAME 分別填入矩陣大小及輸出檔名
-    * default size 10
-    * default name "matrix.txt"
     ```
     ./random <SIZE> <FILE_NAME>
     ```
+    * SIZE 及 FILE_NAME 分別填入矩陣大小及輸出檔名
+    * default size 16
+    * default name "input.txt"
 
 ## 實作方式
 * 使用 openmp 將範圍內程式碼拆成多個 thread ，同時在多個 CPU 上執行

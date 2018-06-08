@@ -88,12 +88,20 @@ int main (int argc, char **argv) {
 
     /* matrix multiply */ 
     clock_gettime(CLOCK_REALTIME, &start);
-    #pragma omp parallel for collapse(3)
-    for (i=0;i<a_row;i++) {
+    int test1 = (int)a_row/2;
+    
+    #pragma omp parallel for collapse(3) 
+    for (i=0;i<test1;i++) 
         for (j=0;j<b_col;j++) 
-            for (k=0;k<a_col;k++)
+            for (k=0;k<a_col;k++) 
                 c[i][j]+=a[i][k]*b[k][j];
-    }
+
+    #pragma omp parallel for collapse(3) 
+    for (i=test1;i<a_row;i++) 
+        for (j=0;j<b_col;j++) 
+            for (k=0;k<a_col;k++) 
+                c[i][j]+=a[i][k]*b[k][j];
+
     clock_gettime(CLOCK_REALTIME, &end);
     printf("parallel: %f sec\n",diff_in_second(start, end));
 
