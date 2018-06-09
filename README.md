@@ -14,7 +14,7 @@ Multiplication以便與之比較)
     make run
     ```
     * 列出四個執行檔在「乘法運算」所花的時間
-    * 四個執行檔的運算結果會分別存入名稱相同的 txt 檔
+    * 四個執行檔的運算結果會分別存入相對應名稱的 txt 檔
     * 若比對結果不同會輸出相異處，若相同則不會有輸出
 * 清除執行檔及 txt 檔
     ```
@@ -41,3 +41,4 @@ Multiplication以便與之比較)
 * [Toward concurrency](https://hackmd.io/s/Skh_AaVix)
 * [Strassen's matrix multiply](https://medium.com/human-in-a-machine-world/strassen-s-algorithm-for-matrix-multiplication-8aada6cda2fd)
 * [Strassen's multiply that size isn't $2^n*2^n$](https://www.eecis.udel.edu/~saunders/courses/621/03f/modelV.pdf)
+* [perf 效能分析](http://wiki.csie.ncku.edu.tw/embedded/perf-tutorial)

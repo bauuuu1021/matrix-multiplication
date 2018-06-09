@@ -103,7 +103,7 @@ int main (int argc, char **argv) {
                 c[i][j]+=a[i][k]*b[k][j];
 
     clock_gettime(CLOCK_REALTIME, &end);
-    printf("parallel: %f sec\n",diff_in_second(start, end));
+    printf("parallel\t  : %f sec\n",diff_in_second(start, end));
 
     /* export file : parallel.txt */
     FILE *fp_out = NULL;

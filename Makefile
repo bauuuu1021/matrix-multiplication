@@ -5,7 +5,6 @@ OBJ: parallel serial strassen_serial strassen_parallel random
 	$(CC) -o $@ $< -fopenmp
 
 run: $(OBJ)
-	@./random 1024 input.txt
 	@./serial
 	@./parallel
 	@./strassen_serial

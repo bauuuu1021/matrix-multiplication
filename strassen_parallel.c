@@ -20,6 +20,7 @@ double diff_in_second(struct timespec t1, struct timespec t2)
 void add (int size, int **a, int **b, int **c)
 {
 	int i,j;
+	
 	for (i=0; i<size; i++)
 		for (j=0; j<size; j++)
 			c[i][j]=a[i][j]+b[i][j];
@@ -28,6 +29,7 @@ void add (int size, int **a, int **b, int **c)
 void sub (int size, int **a, int **b, int **c)
 {
 	int i,j;
+
 	for (i=0; i<size; i++)
 		for (j=0; j<size; j++)
 			c[i][j]=a[i][j]-b[i][j];
@@ -47,6 +49,7 @@ void free_matrix(int **mat, int n)
 	int i;
 	if (mat == NULL)
 		return;
+
 	for (i = 0; i < n; i++)
 		free(mat[i]);
 	free(mat);
@@ -63,12 +66,10 @@ void strassen (int size, int **a, int **b, int **c)
 	/* size==2, multiply it directly */
 	if (size==2) {
 		/* clear c[i][j] */
-        #pragma omp parallel for collapse(2)
 		for (i=0; i<size; i++)
 			for (j=0; j<size; j++)
 				c[i][j]=0;
 
-        #pragma omp parallel for collapse(3)
 		for (i=0; i<size; i++)
 			for (j=0; j<size; j++)
 				for (k=0; k<size; k++)
@@ -101,7 +102,7 @@ void strassen (int size, int **a, int **b, int **c)
 	c22 = alloc_matrix(newSize);
 
 	/* seperate matrix */
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2) if (newSize > 1024)
 	for (i=0; i<newSize; i++) {
 		for (j=0; j<newSize; j++) {
 			a11[i][j]=a[i][j];
@@ -153,7 +154,7 @@ void strassen (int size, int **a, int **b, int **c)
 	add(newSize,temp1,temp2,c22);
 
 	/* combine matrix */
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2) if (newSize > 1024)
 	for (i=0; i<newSize; i++) {
 		for (j=0; j<newSize; j++) {
 			c[i][j]=c11[i][j];
@@ -187,15 +188,15 @@ void strassen (int size, int **a, int **b, int **c)
 	free_matrix(c22,newSize);
 }
 
+
 int main (int argc, char **argv)
 {
-
+	srand(time(NULL));
 	int **a, **b, **c;
 	int i, j, k , input_size;
-	int num;
+	int num,tmp=2;
 	struct timespec start, end;
-	FILE *fp = NULL;
-	fp = fopen("input.txt", "r");
+	FILE *fp = fopen("input.txt", "r");
 	char a_buff_row[7];
 	char a_buff_col[7];
 	char b_buff_row[7];
@@ -207,7 +208,6 @@ int main (int argc, char **argv)
 	memset(b_buff_col,0,7);
 	memset(buff,0,7);
 
-	/* matrix a */
 	fscanf(fp,"%s",a_buff_row);
 	int a_row = atoi(a_buff_row);
 	fscanf(fp,"%s",a_buff_col);
@@ -217,7 +217,12 @@ int main (int argc, char **argv)
 		return 0;
 	}
 
+    /* make size of matrix (input_size) = 2^n */
 	input_size = a_row;
+	while(input_size>tmp) 
+		tmp*=2;
+	input_size = tmp;
+
 	a = alloc_matrix(input_size);
 	for(i = 0; i<a_row; i++) {
 		for(j = 0; j<a_col; j++) {
@@ -228,12 +233,20 @@ int main (int argc, char **argv)
 		}
 	}
 
-	/* matrix b */
+    /* add 0 */
+	for (i=0; i<tmp; i++) {
+		for (j=0; j<tmp; j++) {
+			if(i>=input_size||j>=input_size) {
+				a[i][j]=0;
+			}
+		}
+	}
+
 	fscanf(fp,"%s",b_buff_row);
 	int b_row = atoi(b_buff_row);
 	fscanf(fp,"%s",b_buff_col);
 	int b_col = atoi(b_buff_col);
-	if(b_row!=b_col||b_row!=input_size||b_col!=input_size) {
+	if(b_row!=b_col||b_row!=a_row||b_row!=a_col) {
 		printf("error b input!!\n");
 		return 0;
 	}
@@ -248,25 +261,30 @@ int main (int argc, char **argv)
 		}
 	}
 
-	fclose(fp);		/* close input.txt */
+	for (i=0; i<tmp; i++) {
+		for (j=0; j<tmp; j++) {
+			if(i>=input_size||j>=input_size) {
+				b[i][j]=0;
+			}
+		}
+	}
+	fclose(fp);     /* input file */
 
-	/* create matrix */
+    /* create matrix c */
 	c = alloc_matrix(input_size);
 	
-	/* matrix multiply */
+    /* matrix multiplication */
 	clock_gettime(CLOCK_REALTIME, &start);
 	strassen(input_size,a,b,c);
 	clock_gettime(CLOCK_REALTIME, &end);
 	printf("strassen parallel : %f sec\n",diff_in_second(start, end));
-	FILE *fp_out = NULL;
-	fp_out = fopen("strassen_parallel.txt", "w");
+
+	FILE *fp_out = fopen("strassen_parallel.txt", "w");
 	for(i = 0; i<a_row; i++) {
 		for(j = 0; j<b_col; j++) {
 			fprintf(fp_out,"%d ",c[i][j]);
 		}
 		fprintf(fp_out,"\n");
 	}
-	
 	fclose(fp_out);
-
 }

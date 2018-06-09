@@ -93,7 +93,7 @@ int main (int argc, char **argv) {
                 c[i][j]+=a[i][k]*b[k][j];
     }
     clock_gettime(CLOCK_REALTIME, &end);
-    printf("serial   : %f sec\n",diff_in_second(start, end));
+    printf("serial\t\t  : %f sec\n",diff_in_second(start, end));
 
     /* export file : serial.txt */
     FILE *fp_out = NULL;
