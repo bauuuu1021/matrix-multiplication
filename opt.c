@@ -32,7 +32,7 @@ void sub (int size, int **a, int **b, int **c)
 			c[i][j]=a[i][j]-b[i][j];
 }
 
-int** alloc_matrix(int size)
+int** createMatrix(int size)
 {
 	int** matrix;
 	matrix = (int**) malloc(size * sizeof(int *));
@@ -41,15 +41,15 @@ int** alloc_matrix(int size)
 	return matrix;
 }
 
-void free_matrix(int **mat, int n)
+void freeMatrix(int **matrix, int n)
 {
 	int i;
-	if (mat == NULL)
+	if (!matrix)
 		return;
+
 	for (i = 0; i < n; i++)
-		free(mat[i]);
-	free(mat);
-	mat = NULL;
+		free(matrix[i]);
+	free(matrix);
 }
 
 void strassen (int size, int **a, int **b, int **c)
@@ -76,27 +76,27 @@ void strassen (int size, int **a, int **b, int **c)
 
 	/* alloc memory */
 	newSize = size/2;
-	temp1 = alloc_matrix(newSize);
-	temp2 = alloc_matrix(newSize);
-	m1 = alloc_matrix(newSize);
-	m2 = alloc_matrix(newSize);
-	m3 = alloc_matrix(newSize);
-	m4 = alloc_matrix(newSize);
-	m5 = alloc_matrix(newSize);
-	m6 = alloc_matrix(newSize);
-	m7 = alloc_matrix(newSize);
-	a11 = alloc_matrix(newSize);
-	a12 = alloc_matrix(newSize);
-	a21 = alloc_matrix(newSize);
-	a22 = alloc_matrix(newSize);
-	b11 = alloc_matrix(newSize);
-	b12 = alloc_matrix(newSize);
-	b21 = alloc_matrix(newSize);
-	b22 = alloc_matrix(newSize);
-	c11 = alloc_matrix(newSize);
-	c12 = alloc_matrix(newSize);
-	c21 = alloc_matrix(newSize);
-	c22 = alloc_matrix(newSize);
+	temp1 = createMatrix(newSize);
+	temp2 = createMatrix(newSize);
+	m1 = createMatrix(newSize);
+	m2 = createMatrix(newSize);
+	m3 = createMatrix(newSize);
+	m4 = createMatrix(newSize);
+	m5 = createMatrix(newSize);
+	m6 = createMatrix(newSize);
+	m7 = createMatrix(newSize);
+	a11 = createMatrix(newSize);
+	a12 = createMatrix(newSize);
+	a21 = createMatrix(newSize);
+	a22 = createMatrix(newSize);
+	b11 = createMatrix(newSize);
+	b12 = createMatrix(newSize);
+	b21 = createMatrix(newSize);
+	b22 = createMatrix(newSize);
+	c11 = createMatrix(newSize);
+	c12 = createMatrix(newSize);
+	c21 = createMatrix(newSize);
+	c22 = createMatrix(newSize);
     
 	/* seperate matrix */
 	for (i=0; i<newSize; i++) {
@@ -160,27 +160,27 @@ void strassen (int size, int **a, int **b, int **c)
 	}
 
 	/* free memory */
-	free_matrix(temp1,newSize);
-	free_matrix(temp2,newSize);
-	free_matrix(m1,newSize);
-	free_matrix(m2,newSize);
-	free_matrix(m3,newSize);
-	free_matrix(m4,newSize);
-	free_matrix(m5,newSize);
-	free_matrix(m6,newSize);
-	free_matrix(m7,newSize);
-	free_matrix(a11,newSize);
-	free_matrix(a12,newSize);
-	free_matrix(a21,newSize);
-	free_matrix(a22,newSize);
-	free_matrix(b11,newSize);
-	free_matrix(b12,newSize);
-	free_matrix(b21,newSize);
-	free_matrix(b22,newSize);
-	free_matrix(c11,newSize);
-	free_matrix(c12,newSize);
-	free_matrix(c21,newSize);
-	free_matrix(c22,newSize);
+	freeMatrix(temp1,newSize);
+	freeMatrix(temp2,newSize);
+	freeMatrix(m1,newSize);
+	freeMatrix(m2,newSize);
+	freeMatrix(m3,newSize);
+	freeMatrix(m4,newSize);
+	freeMatrix(m5,newSize);
+	freeMatrix(m6,newSize);
+	freeMatrix(m7,newSize);
+	freeMatrix(a11,newSize);
+	freeMatrix(a12,newSize);
+	freeMatrix(a21,newSize);
+	freeMatrix(a22,newSize);
+	freeMatrix(b11,newSize);
+	freeMatrix(b12,newSize);
+	freeMatrix(b21,newSize);
+	freeMatrix(b22,newSize);
+	freeMatrix(c11,newSize);
+	freeMatrix(c12,newSize);
+	freeMatrix(c21,newSize);
+	freeMatrix(c22,newSize);
 }
 
 
@@ -218,7 +218,7 @@ int main (int argc, char **argv)
 		tmp*=2;
 	input_size = tmp;
 
-	a = alloc_matrix(input_size);
+	a = createMatrix(input_size);
 	for(i = 0; i<a_row; i++) {
 		for(j = 0; j<a_col; j++) {
 			fscanf(fp,"%s",buff);
@@ -246,7 +246,7 @@ int main (int argc, char **argv)
 		return 0;
 	}
 
-	b = alloc_matrix(input_size);
+	b = createMatrix(input_size);
 	for(i = 0; i<b_row; i++) {
 		for(j = 0; j<b_col; j++) {
 			fscanf(fp,"%s",buff);
@@ -266,7 +266,7 @@ int main (int argc, char **argv)
 	fclose(fp);     /* input file */
 
     /* create matrix c */
-	c = alloc_matrix(input_size);
+	c = createMatrix(input_size);
 
     /* matrix multiplication */
 	clock_gettime(CLOCK_REALTIME, &start);

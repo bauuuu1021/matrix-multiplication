@@ -36,6 +36,7 @@ Multiplication以便與之比較)
 * 使用 openmp 將範圍內程式碼拆成多個 thread ，同時在多個 CPU 上執行
 * 需加上 `<omp.h>` 之標頭檔
 * 編譯時需加上 `-fopenmp` 之參數
+* 若輸入的矩陣尺寸非 2 的 n 次方，在跑 strassen's 前會自動補零，成為 2 的 n 次方，以符合 strassen's 的要求
 
 ## 參考資料
 * [Toward concurrency](https://hackmd.io/s/Skh_AaVix)

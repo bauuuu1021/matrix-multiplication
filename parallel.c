@@ -89,7 +89,7 @@ int main (int argc, char **argv) {
     /* matrix multiply */ 
     clock_gettime(CLOCK_REALTIME, &start);
     
-    #pragma omp parallel for collapse(3) 
+    #pragma omp parallel for private(j,k)
     for (i=0;i<a_row;i++) 
         for (j=0;j<b_col;j++) 
             for (k=0;k<a_col;k++) 

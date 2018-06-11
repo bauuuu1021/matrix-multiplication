@@ -17,8 +17,9 @@ void outputMatrix (FILE *fp, int size) {
 int main (int argc, char **argv) {
 
     if (argc!=1 && argc!=3) {
-        printf("Incorrect format!\nPlease input SIZE and OUTPUTFILE as argv\n");
-        return 1;
+        printf("usage: %s <size> <filename>\n", argv[0]);
+        printf("or     %s for default size 16 and filename input.txt\n", argv[0]); 
+	return 1;
     }
 
     srand(time(NULL));
