@@ -165,8 +165,6 @@ void strassen (int size, int **a, int **b, int **c)
 			strassen(newSize,temp9,temp10,m7);
 		}
 	}
-	#pragma omp parallel
-	{
 
 		/* C11 = M1 + M4 − M5 + M7 */
 		add(newSize,m1,m4,temp1);
@@ -184,7 +182,6 @@ void strassen (int size, int **a, int **b, int **c)
 		add(newSize,m3,m6,temp2);
 		add(newSize,temp1,temp2,c22);
 
-	}
 	/* combine matrix */
 	for (i=0; i<newSize; i++) {
 		for (j=0; j<newSize; j++) {
@@ -326,4 +323,8 @@ int main (int argc, char **argv)
 		fprintf(fp_out,"\n");
 	}
 	fclose(fp_out);
+
+	freeMatrix(a,input_size);
+	freeMatrix(b,input_size);
+	freeMatrix(c,input_size);
 }
