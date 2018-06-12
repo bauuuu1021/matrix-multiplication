@@ -20,7 +20,7 @@ double diff_in_second(struct timespec t1, struct timespec t2)
 void add (int size, int **a, int **b, int **c)
 {
 	int i,j;
-	
+
 	for (i=0; i<size; i++)
 		for (j=0; j<size; j++)
 			c[i][j]=a[i][j]+b[i][j];
@@ -59,7 +59,8 @@ void freeMatrix(int **matrix, int n)
 void strassen (int size, int **a, int **b, int **c)
 {
 	int **m1, **m2, **m3, **m4, **m5, **m6, **m7, **a11, **a12, **a21, **a22,
-	    **b11, **b12, **b21, **b22, **c11, **c12, **c21, **c22, **temp1, **temp2;
+	    **b11, **b12, **b21, **b22, **c11, **c12, **c21, **c22, **temp1, **temp2,
+	    **temp3, **temp4, **temp5, **temp6, **temp7, **temp8, **temp9, **temp10;
 	int i, j, k;
 	int newSize;
 
@@ -81,6 +82,14 @@ void strassen (int size, int **a, int **b, int **c)
 	newSize = size/2;
 	temp1 = createMatrix(newSize);
 	temp2 = createMatrix(newSize);
+	temp3 = createMatrix(newSize);
+	temp4 = createMatrix(newSize);
+	temp5 = createMatrix(newSize);
+	temp6 = createMatrix(newSize);
+	temp7 = createMatrix(newSize);
+	temp8 = createMatrix(newSize);
+	temp9 = createMatrix(newSize);
+	temp10 = createMatrix(newSize);
 	m1 = createMatrix(newSize);
 	m2 = createMatrix(newSize);
 	m3 = createMatrix(newSize);
@@ -102,7 +111,6 @@ void strassen (int size, int **a, int **b, int **c)
 	c22 = createMatrix(newSize);
 
 	/* seperate matrix */
-    #pragma omp parallel for collapse(2) if (newSize > 512)
 	for (i=0; i<newSize; i++) {
 		for (j=0; j<newSize; j++) {
 			a11[i][j]=a[i][j];
@@ -115,46 +123,69 @@ void strassen (int size, int **a, int **b, int **c)
 			b22[i][j]=b[i+newSize][j+newSize];
 		}
 	}
+	#pragma omp parallel sections
+	{
+		#pragma omp section
+		{
+			/* M1 = (A11 + A22) (B11 + B22) */
+			add(newSize,a11,a22,temp1);
+			add(newSize,b11,b22,temp2);
+			strassen(newSize,temp1,temp2,m1);
 
-	/* M1 = (A11 + A22) (B11 + B22) */
-	add(newSize,a11,a22,temp1);
-	add(newSize,b11,b22,temp2);
-	strassen(newSize,temp1,temp2,m1);
-	/* M2 = (A21 + A22)B11 */
-	add(newSize,a21,a22,temp1);
-	strassen(newSize,temp1,b11,m2);
-	/* M3 = A11(B12 − B22) */
-	sub(newSize,b12,b22,temp1);
-	strassen(newSize,a11,temp1,m3);
-	/* M4 = A22(B21 − B11) */
-	sub(newSize,b21,b11,temp1);
-	strassen(newSize,a22,temp1,m4);
-	/* M5 = (A11 + A12)B22 */
-	add(newSize,a11,a12,temp1);
-	strassen(newSize,temp1,b22,m5);
-	/* M6 = (A21 − A11)(B11 + B12) */
-	sub(newSize,a21,a11,temp1);
-	add(newSize,b11,b12,temp2);
-	strassen(newSize,temp1,temp2,m6);
-	/* M7 = (A12 − A22)(B21 + B22) */
-	sub(newSize,a12,a22,temp1);
-	add(newSize,b21,b22,temp2);
-	strassen(newSize,temp1,temp2,m7);
-	/* C11 = M1 + M4 − M5 + M7 */
-	add(newSize,m1,m4,temp1);
-	sub(newSize,m7,m5,temp2);
-	add(newSize,temp1,temp2,c11);
-	/* C12 = M3 + M5 */
-	add(newSize,m3,m5,c12);
-	/* C21 = M2 + M4 */
-	add(newSize,m2,m4,c21);
-	/* C22 = M1 − M2 + M3 + M6 */
-	sub(newSize,m1,m2,temp1);
-	add(newSize,m3,m6,temp2);
-	add(newSize,temp1,temp2,c22);
+			/* M2 = (A21 + A22)B11 */
+			add(newSize,a21,a22,temp3);
+			strassen(newSize,temp3,b11,m2);
+		}
+		#pragma omp section
+		{
+			/* M3 = A11(B12 − B22) */
+			sub(newSize,b12,b22,temp4);
+			strassen(newSize,a11,temp4,m3);
 
+			/* M4 = A22(B21 − B11) */
+			sub(newSize,b21,b11,temp5);
+			strassen(newSize,a22,temp5,m4);
+		}
+		#pragma omp section
+		{
+			/* M5 = (A11 + A12)B22 */
+			add(newSize,a11,a12,temp6);
+			strassen(newSize,temp6,b22,m5);
+
+			/* M6 = (A21 − A11)(B11 + B12) */
+			sub(newSize,a21,a11,temp7);
+			add(newSize,b11,b12,temp8);
+			strassen(newSize,temp7,temp8,m6);
+		}
+		#pragma omp section
+		{
+			/* M7 = (A12 − A22)(B21 + B22) */
+			sub(newSize,a12,a22,temp9);
+			add(newSize,b21,b22,temp10);
+			strassen(newSize,temp9,temp10,m7);
+		}
+	}
+	#pragma omp parallel
+	{
+
+		/* C11 = M1 + M4 − M5 + M7 */
+		add(newSize,m1,m4,temp1);
+		sub(newSize,m7,m5,temp2);
+		add(newSize,temp1,temp2,c11);
+
+		/* C12 = M3 + M5 */
+		add(newSize,m3,m5,c12);
+
+		/* C21 = M2 + M4 */
+		add(newSize,m2,m4,c21);
+
+		/* C22 = M1 − M2 + M3 + M6 */
+		sub(newSize,m1,m2,temp1);
+		add(newSize,m3,m6,temp2);
+		add(newSize,temp1,temp2,c22);
+
+	}
 	/* combine matrix */
-    #pragma omp parallel for collapse(2) if (newSize > 512)
 	for (i=0; i<newSize; i++) {
 		for (j=0; j<newSize; j++) {
 			c[i][j]=c11[i][j];
@@ -167,6 +198,14 @@ void strassen (int size, int **a, int **b, int **c)
 	/* free memory */
 	freeMatrix(temp1,newSize);
 	freeMatrix(temp2,newSize);
+	freeMatrix(temp3,newSize);
+	freeMatrix(temp4,newSize);
+	freeMatrix(temp5,newSize);
+	freeMatrix(temp6,newSize);
+	freeMatrix(temp7,newSize);
+	freeMatrix(temp8,newSize);
+	freeMatrix(temp9,newSize);
+	freeMatrix(temp10,newSize);
 	freeMatrix(m1,newSize);
 	freeMatrix(m2,newSize);
 	freeMatrix(m3,newSize);
@@ -217,9 +256,9 @@ int main (int argc, char **argv)
 		return 0;
 	}
 
-    /* make size of matrix (input_size) = 2^n */
+	/* make size of matrix (input_size) = 2^n */
 	input_size = a_row;
-	while(input_size>tmp) 
+	while(input_size>tmp)
 		tmp*=2;
 	input_size = tmp;
 
@@ -233,7 +272,7 @@ int main (int argc, char **argv)
 		}
 	}
 
-    /* add 0 */
+	/* add 0 */
 	for (i=0; i<tmp; i++) {
 		for (j=0; j<tmp; j++) {
 			if(i>=input_size||j>=input_size) {
@@ -270,10 +309,10 @@ int main (int argc, char **argv)
 	}
 	fclose(fp);     /* input file */
 
-    /* create matrix c */
+	/* create matrix c */
 	c = createMatrix(input_size);
-	
-    /* matrix multiplication */
+
+	/* matrix multiplication */
 	clock_gettime(CLOCK_REALTIME, &start);
 	strassen(input_size,a,b,c);
 	clock_gettime(CLOCK_REALTIME, &end);

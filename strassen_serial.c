@@ -95,7 +95,7 @@ void strassen (int size, int **a, int **b, int **c)
 	c12 = createMatrix(newSize);
 	c21 = createMatrix(newSize);
 	c22 = createMatrix(newSize);
-    
+
 	/* seperate matrix */
 	for (i=0; i<newSize; i++) {
 		for (j=0; j<newSize; j++) {
@@ -189,7 +189,7 @@ int main (int argc, char **argv)
 	int i, j, k , input_size;
 	int num,tmp=2;
 	struct timespec start, end;
-	FILE *fp = fopen("../input.txt", "r");
+	FILE *fp = fopen("input.txt", "r");
 	char a_buff_row[7];
 	char a_buff_col[7];
 	char b_buff_row[7];
@@ -210,9 +210,9 @@ int main (int argc, char **argv)
 		return 0;
 	}
 
-    /* make size of matrix (input_size) = 2^n */
+	/* make size of matrix (input_size) = 2^n */
 	input_size = a_row;
-	while(input_size>tmp) 
+	while(input_size>tmp)
 		tmp*=2;
 	input_size = tmp;
 
@@ -226,7 +226,7 @@ int main (int argc, char **argv)
 		}
 	}
 
-    /* add 0 */
+	/* add 0 */
 	for (i=0; i<tmp; i++) {
 		for (j=0; j<tmp; j++) {
 			if(i>=input_size||j>=input_size) {
@@ -263,10 +263,10 @@ int main (int argc, char **argv)
 	}
 	fclose(fp);     /* input file */
 
-    /* create matrix c */
+	/* create matrix c */
 	c = createMatrix(input_size);
 
-    /* matrix multiplication */
+	/* matrix multiplication */
 	clock_gettime(CLOCK_REALTIME, &start);
 	strassen(input_size,a,b,c);
 	clock_gettime(CLOCK_REALTIME, &end);
